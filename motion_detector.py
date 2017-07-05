@@ -1,9 +1,10 @@
 import cv2,time
-
+from datetime import datetime
 
 #regarded as the first static frame
 first_frame=None
-status_list=[]
+status_list=[None,None]
+times=[]
 
 #capturing video through webcam
 video=cv2.VideoCapture(0)
@@ -35,6 +36,13 @@ while True:
         cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),3)
     
     status_list.append(status)
+
+    #recording time when the state changes ie when motion detected
+    if status_list[-1]==1 and status_list[-2]==0:
+        times.append(datetime.now())
+    if status_list[-1]==0 and status_list[-2]==1:
+        times.append(datetime.now())    
+    
     cv2.imshow("Gray Frame",gray)
     cv2.imshow("Delta frame",delta_frame)
     cv2.imshow("Threshold frame",thresh_frame)
@@ -45,5 +53,6 @@ while True:
     if key==ord('q'):
         break
 
+print times
 video.release()    
 cv2.destroyAllWindows
