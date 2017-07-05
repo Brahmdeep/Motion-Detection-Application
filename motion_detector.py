@@ -1,10 +1,11 @@
-import cv2,time
+import cv2,time,pandas
 from datetime import datetime
 
 #regarded as the first static frame
 first_frame=None
 status_list=[None,None]
 times=[]
+df=pandas.DataFrame(columns=["Start","End"])
 
 #capturing video through webcam
 video=cv2.VideoCapture(0)
@@ -51,8 +52,15 @@ while True:
     key=cv2.waitKey(1)
 
     if key==ord('q'):
+        if status==1:
+            times.append(datetime.now())
         break
 
-print times
+#creating data frame
+for i in range(0,len(times),2):
+    df=df.append({"Start":times[i],"End":times[i+1]},ignore_index=True)
+
+df.to_csv("Times.csv")
+
 video.release()    
 cv2.destroyAllWindows
